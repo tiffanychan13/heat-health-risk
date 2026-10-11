@@ -3,6 +3,9 @@ data/raw/*
 data/external/*
 data/processed/*
 !data/**/.gitkeep
+# Small public source files are committed so the project runs as-is
+!data/raw/ehdp/
+!data/external/ehdp/
 
 # Python
 __pycache__/
