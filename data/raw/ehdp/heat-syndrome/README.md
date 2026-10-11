@@ -29,10 +29,6 @@ For more information, see the Council of State and Territorial Epidemiologists' 
 ### Daily temperature
 The maximum daily temperature is the heat index or temperature, whichever is higher, as recorded by the National Weather Service weather station at La Guardia Airport.
 
-## Contact us
-
-You can comment on issues and we'll follow up as soon as we can. 
-
 ## Communications disclaimer
 
 With regard to GitHub platform communications, staff from the New York City Department of Health & Mental Hygiene are authorized to answer specific questions of a technical nature with regard to this repository. Staff may not disclose private or sensitive data.
