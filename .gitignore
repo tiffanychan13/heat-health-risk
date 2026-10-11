@@ -6,6 +6,8 @@ data/processed/*
 # Small public source files are committed so the project runs as-is
 !data/raw/ehdp/
 !data/external/ehdp/
+!data/raw/iem/
+!data/external/nyc-open-data/
 
 # Python
 __pycache__/
