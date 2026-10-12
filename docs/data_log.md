@@ -11,7 +11,7 @@ Record every dataset download here so results can be reproduced.
 | 2026-10-11 | `cool_it_nyc_2020_cooling_sites.csv` | `data/external/nyc-open-data/` | [Cool It! NYC 2020 – Cooling Sites](https://data.cityofnewyork.us/d/h2bn-gu9k) (NYC Open Data) | 271 **outdoor** NYC Parks cooling features (misting stations, spray adapters, hydrant caps) with status and coordinates. Not indoor cooling centers. |
 | 2026-10-11 | `cooling-locations.csv` | `data/external/nyc-open-data/` | NYC Open Data (exact dataset to be confirmed) | 4,610 NYC Parks drinking fountains (3,849) and spray showers (761), with borough and park name only. No coordinates. Not indoor cooling centers. |
 
-## First observations (2026-10-11)
+## First observations
 
 - **Three overlapping versions of the ED series.** `previous_years.csv` (2017–2025), `edheat1720_supp.csv` (2017–2020) and the yearly `edheat20XX_live.csv` files (2021–2026) overlap. Daily max temperature matches across all of them, but visit counts differ:
   - `previous_years` vs `edheat1720_supp`: 287 of 612 overlapping days differ. Likely the 2023 case-definition revision (the source README says the revised definition was applied to all years on the portal).
