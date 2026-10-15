@@ -1,90 +1,84 @@
-# Heat-Risk Activation: Decision-Support System for Municipal Heat-Response Interventions
+# Heat-Risk Activation: Forecast-Driven Decision Support for Heat-Response Interventions in New York City
 
-Semester project for **Practicum in Data Analytics and Statistics** (M.S. Engineering Data Analytics and Statistics).
+Tiffany Chan, ESE 5971 Practicum in Data Analytics and Statistics
 
-## Problem
+## Project objective
 
-Heat-related illness is a serious and growing public-health burden in New York City. This project builds a decision-support system that helps the city decide **when** to activate heat-response interventions (heat advisories, cooling centers, outreach) and **where** to focus them.
+New York City can respond to forecast heat by issuing advisories, opening cooling centers, and sending outreach teams to vulnerable neighborhoods. These actions cost staff time and money, so the city has to decide when they are worth it.
 
-## Two-level design
+This project asks: at the time a weather forecast is issued, how likely is it that citywide heat-related emergency department (ED) visits will be elevated 3 to 7 days later? The predicted probability is then used to recommend whether to escalate the heat response and how many neighborhoods to cover.
 
-Public daily heat-related emergency-department (ED) data for NYC is **citywide only**, so the decision is split into two levels.
+The project has two levels:
 
-**Level 1: When to act (city-day, modeled).** The analytical system estimates
+1. **When to act (citywide, learned from data).** Estimate p̂_t, the probability that daily heat-related ED visits exceed a threshold κ at least once in days t+3 to t+7, using NWS forecasts, recent heat, and recent ED counts.
+2. **Where to focus (neighborhood, rule-based).** If the city escalates, neighborhoods are prioritized by the NYC Heat Vulnerability Index (HVI). Higher predicted risk extends the response from HVI 5 neighborhoods to HVI 4 and 5, then citywide.
 
-$$\hat p_t = \Pr(Y_{t+\Delta} = 1 \mid X_t)$$
+Daily ED data are only published for the whole city, so the model does not predict neighborhood-level risk. The data also cannot show how much the interventions actually reduce ED visits, so that effect is treated as an assumed range (about 0 to 15 percent) rather than estimated. Results are predictive, not causal.
 
-the probability that citywide heat-related ED visits exceed a threshold within the next 3–7 days, given forecast heat conditions, recent ED trends, and day-of-season. Activation happens when $\hat p_t \ge \eta$, where $\eta$ comes from an explicit cost trade-off between false alarms and missed events.
-
-**Level 2: Where to focus (neighborhood, rule-based).** Once activated, neighborhoods are ranked by the NYC Heat Vulnerability Index (HVI) and existing cooling-center coverage. Response is tiered by severity:
-
-| Predicted severity | Neighborhoods covered |
-|---|---|
-| Elevated | HVI 5 |
-| High | HVI 4–5 |
-| Extreme | All neighborhoods |
-
-## Data sources
-
-| Source | Use |
-|---|---|
-| NYC EH Data Portal, real-time heat-related illness | Primary outcome: daily citywide heat-related ED visits (syndromic surveillance) |
-| Iowa Environmental Mesonet (IEM) | Archived NWS MOS forecasts and heat advisory/warning records |
-| NOAA NCEI daily summaries | Observed temperature and humidity |
-| NYC Heat Vulnerability Index (NYC Open Data) | Neighborhood vulnerability ranking (1–5) |
-| Cool It! NYC cooling sites (NYC Open Data) | Cooling-center locations |
-| NYS Heat Stress data | Secondary outcome: heat-related hospitalizations |
-
-Raw data is **not** committed to this repo. See `data/README.md`.
-
-## Key caveats
-
-- Syndromic ED data counts suspected, not confirmed, heat illness.
-- 2020 is dropped or flagged because COVID-19 depressed ED visits.
-- How much interventions actually reduce ED visits is uncertain in the literature. The effect is treated as an uncertain parameter (about 0–15% reduction), and the analysis shows how the optimal $\eta$ shifts across that range.
-- Claims are predictive, not causal.
-
-See `docs/assumptions.md` for the full list.
-
-## Repository layout
+## Repository organization
 
 ```
-data/
-  raw/          # untouched downloads (git-ignored)
-  external/     # reference data, e.g. HVI, cooling sites (git-ignored)
-  processed/    # cleaned, model-ready city-day tables (git-ignored)
-notebooks/      # exploratory analysis, numbered by milestone
-src/heatrisk/   # reusable code: data loading, features, models, decision rule
-tests/          # unit tests for src/
-reports/
-  figures/      # generated plots
-  milestones/   # dossiers and slide decks
-docs/           # assumptions, data log, notes
+heat-health-risk/
+  README.md
+  requirements.txt
+  pyproject.toml
+  notebooks/
+    milestone2_analysis.ipynb   main Milestone 2 analysis
+  src/heatrisk/
+    data.py                     folder paths and a CSV loader
+    download.py                 re-downloads the NYC Health files
+    decision.py                 cost-based activation threshold (early version)
+  tests/                        unit tests for decision.py
+  data/
+    README.md                   what each data folder contains
+    raw/                        source files, unchanged
+    external/                   reference data (HVI, cooling sites)
+    processed/                  empty for now
+  reports/
+    figures/                    figures saved by the notebook
+    milestones/                 milestone dossiers
+  docs/
+    data_log.md                 where each file came from and first checks
+    assumptions.md              working assumptions and open questions
 ```
 
-## Setup
+## Dependencies
+
+Python 3.10 or newer. Packages are listed in `requirements.txt` (pandas, numpy, scikit-learn, matplotlib, and Jupyter). To set up an environment:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 pip install -e .
-pytest
 ```
 
-## Work plan
+## How to run
 
-| Phase | Work |
-|---|---|
-| Data acquisition | Pull ED, forecast, observation, advisory, HVI and cooling-site data; merge into one city-day table |
-| Data understanding | Reporting lag and completeness, missingness, forecast vs. observed alignment |
-| Exploratory analysis | Relationship between forecast heat and ED visits; lagged effects |
-| Modeling | Logistic regression baseline and gradient-boosted trees; time-based holdout validation |
-| Decision rule | Cost-based threshold $\eta$; tiered neighborhood allocation |
-| Uncertainty | Calibration; sensitivity of $\eta$ to costs and intervention effect |
-| Reproducibility | End-to-end pipeline from data pull to decision |
-| Final defense | Present and defend the system |
+1. Clone the repository. All data needed for the analysis is already included under `data/`.
+2. Install the dependencies (above).
+3. Open `notebooks/milestone2_analysis.ipynb` in Jupyter or VS Code, choose Restart Kernel, then Run All. It takes under a minute and writes four figures to `reports/figures/`.
+4. Optional: run `pytest` from the repository root to test `decision.py`.
 
-## Author
+Nothing has to be run before the notebook. It reads the raw files directly and builds the analysis table in memory.
 
-Tiffany Chan
+## Data origin and access
+
+All data are public and aggregated. No individual-level or confidential records are used. The files are small, so they are committed to the repository.
+
+- **Heat-related ED visits** (`data/raw/ehdp/heat-syndrome/`): daily citywide counts of suspected heat-related ED visits and the daily maximum heat at LaGuardia, May to September, 2017 to 2026. Published by the NYC Department of Health on the Environment and Health Data Portal and its GitHub repository, nychealth/EHDP-data. The analysis uses `previous_years.csv` for 2017 to 2025 and `edheat2026_live.csv` for 2026. The other files in that folder are older or provisional versions of the same series and are kept only for reference.
+- **NWS forecasts** (`data/raw/iem/mos/`): extended-range MOS (MEX) forecasts for LaGuardia, 2021 to 2026, from the Iowa Environmental Mesonet archive.
+- **NWS heat alerts** (`data/raw/iem/alerts/`): watches, warnings, and advisories for forecast zone NYZ072, from the Iowa Environmental Mesonet.
+- **Heat Vulnerability Index** (`data/external/ehdp/heat-vulnerability-index/`): neighborhood scores from 1 to 5, from the same NYC Health repository.
+- **Cooling sites** (`data/external/nyc-open-data/`): NYC Parks outdoor cooling features from NYC Open Data. These are not indoor cooling centers and are not used in the model.
+
+`data/README.md` describes each folder, and `docs/data_log.md` records the source link and download settings for every file.
+
+## Known reproducibility limitations
+
+- The NYC Health files are pinned to one commit of nychealth/EHDP-data, so `python -m heatrisk.download` returns the same files used here. NYC may revise the series later, and those revisions will not show up unless you download with `--latest`.
+- The 2026 ED counts are provisional and may still change at the source.
+- The forecast and alert files were downloaded through web forms on the Iowa Environmental Mesonet site, not by a script. `docs/data_log.md` lists the settings used.
+- Archived MEX forecasts only start in July 2020, so the forecast-based analysis covers 2021 to 2026.
+- The ED counts are revised values, not exactly what was available in real time, so the measured performance may be somewhat better than it would be in live use.
+- `decision.py` still uses an earlier, simpler threshold formula. It will be updated to match the dossier in the next milestone.

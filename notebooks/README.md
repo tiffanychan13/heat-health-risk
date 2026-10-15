@@ -1,10 +1,5 @@
 # Notebooks
 
-Name notebooks by order and topic, e.g.:
+`milestone2_analysis.ipynb` is the main Milestone 2 analysis. It covers data loading, quality and missingness checks, the decision-day table, descriptive analysis, dependence diagnostics, forecast error, a leakage check, and baseline models. The figures it creates are saved to `reports/figures/`.
 
-- `01_data_acquisition.ipynb`
-- `02_data_quality.ipynb`
-- `03_eda.ipynb`
-- `04_baseline_model.ipynb`
-
-Move reusable code into `src/heatrisk/` once it stabilizes.
+To run it, open the notebook from this folder (or the repository root), choose Restart Kernel, then Run All.
